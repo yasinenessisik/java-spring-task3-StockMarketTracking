@@ -12,11 +12,20 @@ public class StockHistory {
     private int StockHistoryID;
 
     private long previousValue;
+    private long currentValue;
 
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "stockID")
     private Stock stock;
+
+    public long getCurrentValue() {
+        return currentValue;
+    }
+
+    public void setCurrentValue(long currentValue) {
+        this.currentValue = currentValue;
+    }
 
     public int getStockHistoryID() {
         return StockHistoryID;

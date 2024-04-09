@@ -1,13 +1,15 @@
 package com.javaspringtask3StockMarketTracking.StockMarketTracking.controller;
 
-import com.javaspringtask3StockMarketTracking.StockMarketTracking.StockHistoryAddRequest;
-import com.javaspringtask3StockMarketTracking.StockMarketTracking.model.Stock;
-import com.javaspringtask3StockMarketTracking.StockMarketTracking.model.StockHistory;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockAddRequest;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryAddRequest;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockDto;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("api/v1/stock")
@@ -19,7 +21,16 @@ public class StockController {
     }
 
     @PostMapping("addStockHistory")
-    public ResponseEntity<Stock> addStockHistory(@RequestBody StockHistoryAddRequest stockHistoryAddRequest){
+    public ResponseEntity<StockDto> addStockHistory(@RequestBody @Valid StockHistoryAddRequest stockHistoryAddRequest){
         return ResponseEntity.ok(stockService.saveStockHistory(stockHistoryAddRequest));
+    }
+
+    @PostMapping("addStock")
+    public ResponseEntity<StockDto> addStockHistory(@RequestBody @Valid StockAddRequest stockAddRequest){
+        return ResponseEntity.ok(stockService.addNewStock(stockAddRequest));
+    }
+    @GetMapping("getAllStocks")
+    public ResponseEntity<List<StockDto>> getAllStocks(){
+        return ResponseEntity.ok(stockService.getAllStock());
     }
 }

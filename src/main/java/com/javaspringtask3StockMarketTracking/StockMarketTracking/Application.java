@@ -23,11 +23,13 @@ public class Application implements CommandLineRunner {
         stock.setName("Google");
 
         StockHistory history2 = new StockHistory();
-        history2.setPreviousValue(199);
+        history2.setPreviousValue(399);
+        history2.setCurrentValue(500);
         history2.setStock(stock);
 
         StockHistory history1 = new StockHistory();
         history1.setPreviousValue(199);
+        history1.setCurrentValue(600);
         history1.setStock(stock);
 
         stock.getStockHistory().add(history1);
