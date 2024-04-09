@@ -34,4 +34,5 @@ public class StockHistoryService {
         StockHistory latestHistory = page.getContent().get(0);
         return stockHistoryDtoConverter.convert(latestHistory);
     }
+
 }

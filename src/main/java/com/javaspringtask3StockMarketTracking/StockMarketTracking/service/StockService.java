@@ -1,5 +1,6 @@
 package com.javaspringtask3StockMarketTracking.StockMarketTracking.service;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockDto;
@@ -9,6 +10,7 @@ import com.javaspringtask3StockMarketTracking.StockMarketTracking.exception.Gene
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.model.Stock;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.model.StockHistory;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.repository.StockRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +20,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class StockService {
+    private final SocketIOServer socketIOServer;
     private final StockRepository stockRepository;
     private final StockDtoConverter converter;
-    public StockService(StockRepository stockRepository, StockDtoConverter converter) {
+    public StockService(SocketIOServer socketIOServer, StockRepository stockRepository, StockDtoConverter converter) {
+        this.socketIOServer = socketIOServer;
         this.stockRepository = stockRepository;
         this.converter = converter;
     }
+    @Transactional
     public Stock getStockById(int id){
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> GenericExceptionHandler.builder()
@@ -32,6 +37,9 @@ public class StockService {
                         .errorMessage("Stock Not Found")
                         .build());
         return stock;
+    }
+    public StockDto findStokById(int id){
+        return converter.convert(getStockById(id));
     }
 
     protected Stock updateStockHistory(Stock stock) {
@@ -46,6 +54,7 @@ public class StockService {
                     .build();
         }
     }
+    @Transactional
     public StockDto saveStockHistory(StockHistoryAddRequest from){
         Stock stock = getStockById(from.getStockId());
 
