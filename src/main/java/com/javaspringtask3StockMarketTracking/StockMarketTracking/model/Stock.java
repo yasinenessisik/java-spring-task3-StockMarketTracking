@@ -1,63 +1,43 @@
 package com.javaspringtask3StockMarketTracking.StockMarketTracking.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
 public class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int stockId;
+    private int StockID;
+    private String name;
 
-    private String companyName;
-    private String companyDescription;
+    @OneToMany(mappedBy = "stock",cascade = CascadeType.ALL)
+    private Set<StockHistory> stockHistory = new HashSet<>();
 
-    @OneToMany(mappedBy = "stock", fetch = FetchType.LAZY)
-    private Set<StockHistory> stockHistories;
-
-    public Stock(String companyName, String companyDescription, Set<StockHistory> stockHistories) {
-        this.companyName = companyName;
-        this.companyDescription = companyDescription;
-        this.stockHistories = stockHistories;
+    public int getStockID() {
+        return StockID;
     }
 
-    public int getStockId() {
-        return stockId;
+    public void setStockID(int stockID) {
+        StockID = stockID;
     }
 
-    public void setStockId(int stockId) {
-        this.stockId = stockId;
+    public String getName() {
+        return name;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public Set<StockHistory> getStockHistory() {
+        return stockHistory;
     }
 
-    public String getCompanyDescription() {
-        return companyDescription;
-    }
-
-    public void setCompanyDescription(String companyDescription) {
-        this.companyDescription = companyDescription;
-    }
-
-    public Set<StockHistory> getStockHistories() {
-        return stockHistories;
-    }
-
-    public void setStockHistories(Set<StockHistory> stockHistories) {
-        this.stockHistories = stockHistories;
+    public void setStockHistory(Set<StockHistory> stockHistory) {
+        this.stockHistory = stockHistory;
     }
 }

@@ -1,46 +1,37 @@
 package com.javaspringtask3StockMarketTracking.StockMarketTracking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
+import lombok.ToString;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
 public class StockHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int stockHistoryId;
+    private int StockHistoryID;
 
-    private double dailyChangePercentage;
+    private long previousValue;
 
-    @ManyToOne()
-    @JoinColumn(name = "stock_id", nullable = false)
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "stockID")
     private Stock stock;
 
-    public StockHistory(double dailyChangePercentage, Stock stock) {
-        this.dailyChangePercentage = dailyChangePercentage;
-        this.stock = stock;
+    public int getStockHistoryID() {
+        return StockHistoryID;
     }
 
-    public int getStockHistoryId() {
-        return stockHistoryId;
+    public void setStockHistoryID(int stockHistoryID) {
+        StockHistoryID = stockHistoryID;
     }
 
-    public void setStockHistoryId(int stockHistoryId) {
-        this.stockHistoryId = stockHistoryId;
+    public long getPreviousValue() {
+        return previousValue;
     }
 
-    public double getDailyChangePercentage() {
-        return dailyChangePercentage;
-    }
-
-    public void setDailyChangePercentage(double dailyChangePercentage) {
-        this.dailyChangePercentage = dailyChangePercentage;
+    public void setPreviousValue(long previousValue) {
+        this.previousValue = previousValue;
     }
 
     public Stock getStock() {
