@@ -9,8 +9,10 @@ import com.javaspringtask3StockMarketTracking.StockMarketTracking.exception.Erro
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.exception.GenericExceptionHandler;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.model.Stock;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.model.StockHistory;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.publisher.StockAddedEvent;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.repository.StockRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +22,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class StockService {
-    private final SocketIOServer socketIOServer;
+    private final ApplicationEventPublisher eventPublisher;
+
     private final StockRepository stockRepository;
     private final StockDtoConverter converter;
-    public StockService(SocketIOServer socketIOServer, StockRepository stockRepository, StockDtoConverter converter) {
-        this.socketIOServer = socketIOServer;
+    public StockService(ApplicationEventPublisher eventPublisher, StockRepository stockRepository, StockDtoConverter converter) {
+        this.eventPublisher = eventPublisher;
         this.stockRepository = stockRepository;
         this.converter = converter;
     }
@@ -45,6 +48,8 @@ public class StockService {
     protected Stock updateStockHistory(Stock stock) {
         try {
             Stock stock1 = stockRepository.save(stock);
+            StockAddedEvent stockAddedEvent = new StockAddedEvent(this, converter.convert(stock1));
+            eventPublisher.publishEvent(stockAddedEvent);
             return stock1;
         }catch (Exception exception){
             throw GenericExceptionHandler.builder()

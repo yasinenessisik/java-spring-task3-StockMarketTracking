@@ -46,6 +46,11 @@ public class SocketModule {
         return client -> {
             String room = client.getHandshakeData().getSingleUrlParam("room");
             client.joinRoom(room);
+
+            List<StockDto> allStocks = stockService.getAllStock();
+
+            client.sendEvent("all_stocks", allStocks);
+
             client.getNamespace().getRoomOperations(room)
                     .sendEvent("get_message", String.format("%s connected to -> %s",
                             client.getSessionId(), room
