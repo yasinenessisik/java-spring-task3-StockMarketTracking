@@ -2,7 +2,6 @@ package com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request;
 
 public class StockHistoryAddRequest {
     int StockId;
-    int previousValue;
     int currentValue;
 
     public int getCurrentValue() {

@@ -27,10 +27,12 @@ public class StockService {
 
     private final StockRepository stockRepository;
     private final StockDtoConverter converter;
-    public StockService(ApplicationEventPublisher eventPublisher, StockRepository stockRepository, StockDtoConverter converter) {
+    private final StockHistoryService stockHistoryService;
+    public StockService(ApplicationEventPublisher eventPublisher, StockRepository stockRepository, StockDtoConverter converter, StockHistoryService stockHistoryService) {
         this.eventPublisher = eventPublisher;
         this.stockRepository = stockRepository;
         this.converter = converter;
+        this.stockHistoryService = stockHistoryService;
     }
     @Transactional
     public Stock getStockById(int id){
@@ -63,20 +65,17 @@ public class StockService {
     @Transactional
     public StockDto saveStockHistory(StockHistoryAddRequest from){
         Stock stock = getStockById(from.getStockId());
-
-        StockHistory history2 = new StockHistory();
-        history2.setPreviousValue(from.getPreviousValue());
-        history2.setCurrentValue(from.getCurrentValue());
-        history2.setStock(stock);
-
-        stock.getStockHistory().add(history2);
+        StockHistory history = stockHistoryService.generateStockHistory(from);
+        stock.getStockHistory().add(history);
         return converter.convert(updateStockHistory(stock));
     }
 
     public StockDto addNewStock(StockAddRequest from){
         Stock stock = new Stock();
         stock.setName(from.getName());
+
         stock.setStockHistory(new HashSet<>());
+
         return converter.convert(stockRepository.save(stock));
     }
     public List<StockDto> getAllStock(){
