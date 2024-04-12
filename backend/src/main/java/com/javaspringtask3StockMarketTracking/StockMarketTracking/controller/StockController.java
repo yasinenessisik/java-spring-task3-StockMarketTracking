@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -30,7 +31,7 @@ public class StockController {
         return ResponseEntity.ok(stockService.addNewStock(stockAddRequest));
     }
     @GetMapping("getAllStocks")
-    public ResponseEntity<List<StockDto>> getAllStocks(){
+    public ResponseEntity<Set<StockDto>> getAllStocks(){
         return ResponseEntity.ok(stockService.getAllStock());
     }
 }

@@ -13,4 +13,7 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Inte
     @Query("SELECT sh FROM Stock s JOIN s.stockHistory sh WHERE s.StockID = :stockId ORDER BY sh.StockHistoryID DESC")
     public Page<StockHistory> getLatestStockHistory(@Param("stockId") int stockId, Pageable pageable);
 
+    @Query("SELECT COUNT(sh) FROM Stock s JOIN s.stockHistory sh WHERE s.StockID = :stockId")
+    public int countStockHistoriesByStockId(@Param("stockId") int stockId);
+
 }

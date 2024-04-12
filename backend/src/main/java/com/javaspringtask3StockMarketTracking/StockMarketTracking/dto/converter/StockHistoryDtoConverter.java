@@ -10,7 +10,9 @@ public class StockHistoryDtoConverter {
         return StockHistoryDto.builder()
                 .StockHistoryID(from.getStockHistoryID())
                 .currentValue(from.getCurrentValue())
-                .previousValue(from.getPreviousValue())
+                .changeDirection(from.getChangeDirection().toString())
+                .percentageChange(from.getPercentageChange())
+                .localDateTime(from.getLocalDateTime())
                 .build();
     }
 }

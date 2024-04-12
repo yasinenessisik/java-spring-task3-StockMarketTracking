@@ -20,11 +20,4 @@ public class StockHistoryAddRequest {
         StockId = stockId;
     }
 
-    public int getPreviousValue() {
-        return previousValue;
-    }
-
-    public void setPreviousValue(int previousValue) {
-        this.previousValue = previousValue;
-    }
 }

@@ -40,21 +40,26 @@ public class StockHistoryService {
 
     public StockHistory generateStockHistory(StockHistoryAddRequest stockHistoryAddRequest){
         StockHistory stockHistory = new StockHistory();
-        Page<StockHistory> previousStockHistory = stockHistoryRepository.getLatestStockHistory(stockHistoryAddRequest.getStockId(),PageRequest.of(0,1));
 
-        if (previousStockHistory.isEmpty()) {
+        try {
+                Page<StockHistory> previousStockHistory = stockHistoryRepository.getLatestStockHistory(stockHistoryAddRequest.getStockId(),PageRequest.of(0,1));
+                StockHistory latestHistory = previousStockHistory.getContent().get(0);
+                stockHistory.setCurrentValue(stockHistoryAddRequest.getCurrentValue());
+                calculateChangeDirection(stockHistory,latestHistory);
+                calculatePercentageChange(stockHistory,latestHistory);
+                setLocalDateTime(stockHistory);
+                System.out.println("buraya geldi" +stockHistory.toString());
+                return stockHistory;
+
+
+
+        }catch (Exception exception){
             throw GenericExceptionHandler.builder()
                     .httpStatus(HttpStatus.NOT_FOUND)
                     .errorCode(ErrorCode.STOCK_NOT_FOUND)
                     .errorMessage("Error occurs while searching Stock")
                     .build();
         }
-
-        StockHistory latestHistory = previousStockHistory.getContent().get(0);
-        calculateChangeDirection(stockHistory,latestHistory);
-        calculatePercentageChange(stockHistory,latestHistory);
-        setLocalDateTime(stockHistory);
-        return stockHistory;
     }
 
     private void calculateChangeDirection(StockHistory stockHistory,StockHistory previousStockHistory) {
@@ -81,8 +86,12 @@ public class StockHistoryService {
     private void setLocalDateTime(StockHistory stockHistory){
         stockHistory.setLocalDateTime(LocalDateTime.now());
     }
-    protected StockHistory getInitalStockHistory(){
-
-        return
+    public StockHistory getInitalStockHistory(){
+            StockHistory stockHistory = new StockHistory();
+            stockHistory.setLocalDateTime(LocalDateTime.now());
+            stockHistory.setChangeDirection(ChangeDirection.NO_CHANGE);
+            stockHistory.setCurrentValue(0);
+            stockHistory.setPercentageChange(0);
+        return stockHistory;
     }
 }

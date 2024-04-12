@@ -13,6 +13,7 @@ import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockS
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SocketModule {
@@ -69,7 +70,7 @@ public class SocketModule {
     }
 
     private void sendAllStocks(SocketIOClient client, String room) {
-        List<StockDto> allStocks = stockService.getAllStock();
+        Set<StockDto> allStocks = stockService.getAllStock();
         client.getNamespace().getRoomOperations(room)
                 .sendEvent("get_all_stock", allStocks, room);
     }
@@ -97,7 +98,7 @@ public class SocketModule {
         };
     }
     private void updateAllStocks(SocketIOClient client) {
-        List<StockDto> allStocks = stockService.getAllStock();
+        Set<StockDto> allStocks = stockService.getAllStock();
         client.sendEvent("all_stocks", allStocks);
     }
 

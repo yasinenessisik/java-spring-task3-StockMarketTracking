@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,8 +52,6 @@ public class StockService {
     protected Stock updateStockHistory(Stock stock) {
         try {
             Stock stock1 = stockRepository.save(stock);
-            StockAddedEvent stockAddedEvent = new StockAddedEvent(this, converter.convert(stock1));
-            eventPublisher.publishEvent(stockAddedEvent);
             return stock1;
         }catch (Exception exception){
             throw GenericExceptionHandler.builder()
@@ -64,22 +63,35 @@ public class StockService {
     }
     @Transactional
     public StockDto saveStockHistory(StockHistoryAddRequest from){
+
         Stock stock = getStockById(from.getStockId());
+
         StockHistory history = stockHistoryService.generateStockHistory(from);
+        history.setStock(stock);
+
         stock.getStockHistory().add(history);
+
         return converter.convert(updateStockHistory(stock));
     }
 
-    public StockDto addNewStock(StockAddRequest from){
+    public StockDto addNewStock(StockAddRequest from) {
         Stock stock = new Stock();
         stock.setName(from.getName());
 
-        stock.setStockHistory(new HashSet<>());
+        StockHistory stockHistory = stockHistoryService.getInitalStockHistory();
+        stockHistory.setStock(stock);
 
-        return converter.convert(stockRepository.save(stock));
+        stock.getStockHistory().add(stockHistory);
+
+        Stock newStock = stockRepository.save(stock);
+
+        return converter.convert(newStock);
     }
-    public List<StockDto> getAllStock(){
-        return stockRepository.findAll().stream().map(stock -> converter.convert(stock)).collect(Collectors.toList());
+    public Set<StockDto> getAllStock(){
+        return stockRepository.findAll().stream().map(stock -> {
+            System.out.println(converter.convert(stock));
+            return converter.convert(stock);
+        }).collect(Collectors.toSet());
     }
 
     public StockDto getStockByName(String room) {

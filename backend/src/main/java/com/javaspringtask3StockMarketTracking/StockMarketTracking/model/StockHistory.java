@@ -8,6 +8,7 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 @Entity
+@ToString
 public class StockHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
