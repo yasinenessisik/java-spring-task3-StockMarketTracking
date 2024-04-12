@@ -12,7 +12,7 @@ public class StockHistoryDtoConverter {
                 .currentValue(from.getCurrentValue())
                 .changeDirection(from.getChangeDirection().toString())
                 .percentageChange(from.getPercentageChange())
-                .localDateTime(from.getLocalDateTime())
+                .localDateTime(from.getLocalDateTime().toString())
                 .build();
     }
 }

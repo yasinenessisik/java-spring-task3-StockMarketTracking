@@ -16,5 +16,5 @@ public class StockHistoryDto {
     private long currentValue;
     private String changeDirection;
     private double percentageChange;
-    private LocalDateTime localDateTime;
+    private String localDateTime;
 }

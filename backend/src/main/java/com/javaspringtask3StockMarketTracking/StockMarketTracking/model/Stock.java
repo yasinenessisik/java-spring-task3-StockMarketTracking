@@ -14,7 +14,7 @@ public class Stock {
     private int StockID;
     private String name;
 
-    @OneToMany(mappedBy = "stock",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "stock",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<StockHistory> stockHistory = new HashSet<>();
 
     public int getStockID() {

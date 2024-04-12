@@ -30,7 +30,7 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-       // socketIOServer.start();
+       socketIOServer.start();
 
         StockAddRequest stock= new StockAddRequest();
         stock.setName("Google");
@@ -53,9 +53,9 @@ public class Application implements ApplicationRunner {
         stockRepository.findAll().forEach(stock1 -> System.out.println(stock1.getName()));
         stockHistoryRepository.findAll().forEach(stock1 -> System.out.println(stock1.toString()));
 
-        /*Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             socketIOServer.stop();
             System.out.println("SocketIO sunucusu durduruldu");
-        }));*/
+        }));
     }
 }
