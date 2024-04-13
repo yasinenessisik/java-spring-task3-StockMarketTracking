@@ -10,6 +10,7 @@ import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.converter.
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockService;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,6 +37,8 @@ public class SocketModule {
         return (senderClient, data, ackSender) -> {
             StockDto newStockDto = stockService.addNewStock(data);
             sendAllStocks(senderClient, "all");
+            ackSender.sendAckData("Stock added successfully", newStockDto);
+
         };
     }
 
@@ -44,6 +47,8 @@ public class SocketModule {
             StockDto newStockDto = stockService.saveStockHistory(data);
             sendAllStocks(senderClient, "all");
             sendSingleStock(senderClient, newStockDto.getName());
+            ackSender.sendAckData("Stock history added successfully", newStockDto);
+
         };
     }
 
@@ -70,7 +75,7 @@ public class SocketModule {
     }
 
     private void sendAllStocks(SocketIOClient client, String room) {
-        Set<StockDto> allStocks = stockService.getAllStock();
+        Slice<StockDto> allStocks = stockService.getAllStockPagination();
         client.getNamespace().getRoomOperations(room)
                 .sendEvent("get_all_stock", allStocks, room);
     }
@@ -98,7 +103,7 @@ public class SocketModule {
         };
     }
     private void updateAllStocks(SocketIOClient client) {
-        Set<StockDto> allStocks = stockService.getAllStock();
+        Slice<StockDto> allStocks = stockService.getAllStockPagination();
         client.sendEvent("all_stocks", allStocks);
     }
 

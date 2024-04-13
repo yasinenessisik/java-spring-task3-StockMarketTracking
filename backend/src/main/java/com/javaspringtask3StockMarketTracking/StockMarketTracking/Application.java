@@ -12,6 +12,11 @@ import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockS
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+
+import java.util.Random;
 
 @SpringBootApplication
 public class Application implements ApplicationRunner {
@@ -30,32 +35,52 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-       socketIOServer.start();
+       // socketIOServer.start();
 
-        StockAddRequest stock= new StockAddRequest();
-        stock.setName("Google");
-        stockService.addNewStock(stock);
+        // 3 farklı hisse senedi oluştur
+        StockAddRequest stock1 = new StockAddRequest();
+        stock1.setName("Google");
 
-        StockHistoryAddRequest history2 = new StockHistoryAddRequest();
-        history2.setStockId(1);
-        history2.setCurrentValue(100);
+        StockAddRequest stock2 = new StockAddRequest();
+        stock2.setName("Apple");
 
-        StockHistoryAddRequest history1 = new StockHistoryAddRequest();
-        history1.setStockId(1);
-        history1.setCurrentValue(100);
+        StockAddRequest stock3 = new StockAddRequest();
+        stock3.setName("Microsoft");
 
-        stockService.saveStockHistory(history1);
-        stockService.saveStockHistory(history2);
+        stockService.addNewStock(stock1);
+        stockService.addNewStock(stock2);
+        stockService.addNewStock(stock3);
+
+        // Her bir hisse senedi için 20 farklı geçmiş verisi oluştur
+        Random random = new Random();
+        for (int i = 1; i <= 20; i++) {
+
+            StockHistoryAddRequest history1 = new StockHistoryAddRequest();
+            history1.setStockId(1);
+            history1.setCurrentValue(random.nextInt(1000) + 1); // 1 ile 1000 arasında rastgele bir değer
+            stockService.saveStockHistory(history1);
 
 
+            StockHistoryAddRequest history2 = new StockHistoryAddRequest();
+            history2.setStockId(2);
+            history2.setCurrentValue(random.nextInt(1000) + 1);
+            stockService.saveStockHistory(history2);
 
 
-        stockRepository.findAll().forEach(stock1 -> System.out.println(stock1.getName()));
-        stockHistoryRepository.findAll().forEach(stock1 -> System.out.println(stock1.toString()));
+            StockHistoryAddRequest history3 = new StockHistoryAddRequest();
+            history3.setStockId(3);
+            history3.setCurrentValue(random.nextInt(1000) + 1);
+            stockService.saveStockHistory(history3);
+        }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        //stockRepository.findAll().forEach(stock -> System.out.println(stock.getName()));
+        //stockHistoryRepository.findAll().forEach(history -> System.out.println(history.toString()));
+        //Slice<StockHistory> findStockWeekly =  stockHistoryRepository.findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC,"localDateTime")));
+        //findStockWeekly.forEach(stockHistory -> System.out.println(stockHistory));
+        /*Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             socketIOServer.stop();
             System.out.println("SocketIO sunucusu durduruldu");
-        }));
+        }));*/
     }
+
 }

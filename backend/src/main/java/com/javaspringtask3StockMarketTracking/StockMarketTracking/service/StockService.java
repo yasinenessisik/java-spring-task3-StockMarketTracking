@@ -14,6 +14,9 @@ import com.javaspringtask3StockMarketTracking.StockMarketTracking.publisher.Stoc
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.repository.StockRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -92,6 +95,12 @@ public class StockService {
             System.out.println(converter.convert(stock));
             return converter.convert(stock);
         }).collect(Collectors.toSet());
+    }
+    public Slice<StockDto> getAllStockPagination(){
+        Slice<StockDto> bookSlice = stockRepository.findAll(PageRequest.of(0, 10, Sort.by("StockID"))).map(stock -> {
+            return converter.convert(stock);
+        });
+        return bookSlice;
     }
 
     public StockDto getStockByName(String room) {
