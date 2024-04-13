@@ -16,10 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +50,6 @@ public class StockHistoryService {
                 calculateChangeDirection(stockHistory,latestHistory);
                 calculatePercentageChange(stockHistory,latestHistory);
                 setLocalDateTime(stockHistory);
-                System.out.println("buraya geldi" +stockHistory.toString());
                 return stockHistory;
 
 
@@ -100,39 +96,4 @@ public class StockHistoryService {
         return stockHistory;
     }
 
-    public Set<StockHistoryDto> getStockHistoryWeekly(Integer stockId){
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneWeekAgo = now.minusWeeks(1);
-        return stockHistoryRepository.findStockHistoryByStockIdAndTimeRange(stockId,oneWeekAgo,now).stream().map(stockHistory ->
-                stockHistoryDtoConverter.convert(stockHistory)
-                ).collect(Collectors.toSet());
-    }
-    public Set<StockHistoryDto> getStockHistoryMonthly(Integer stockId){
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneMonthAgo = now.minusMonths(1);
-        return stockHistoryRepository.findStockHistoryByStockIdAndTimeRange(stockId,oneMonthAgo,now).stream().map(stockHistory ->
-                stockHistoryDtoConverter.convert(stockHistory)
-        ).collect(Collectors.toSet());
-    }
-    public Set<StockHistoryDto> getStockHistoryYearly(Integer stockId) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneYearAgo = now.minusYears(1);
-
-        Set<StockHistoryDto> collect = stockHistoryRepository.findStockHistoryByStockIdAndTimeRange(stockId, oneYearAgo, now)
-                .stream()
-                .map(stockHistory -> stockHistoryDtoConverter.convert(stockHistory))
-                .collect(Collectors.toSet());
-
-        return collect;
-    }
-
-    public Map<String, Set<StockHistoryDto>> getStockHistoryForAllIntervals(Integer stockId) {
-        Map<String, Set<StockHistoryDto>> historyMap = new HashMap<>();
-
-        historyMap.put("yearly", getStockHistoryYearly(stockId));
-        historyMap.put("monthly", getStockHistoryMonthly(stockId));
-        historyMap.put("weekly", getStockHistoryWeekly(stockId));
-
-        return historyMap;
-    }
 }

@@ -17,9 +17,9 @@ public class StockDtoConverter {
 
     public StockDto convert(Stock from){
         return StockDto.builder()
-                .StockID(from.getStockID())
+                .stockID(from.getStockID())
                 .name(from.getName())
-                .stockHistory(from.getStockHistory().stream().map(stockHistory -> converter.convert(stockHistory)).collect(Collectors.toSet()))
+                .stockHistory(from.getStockHistory().stream().map(stockHistory -> converter.convert(stockHistory)).collect(Collectors.toList()))
                 .build();
     }
 }

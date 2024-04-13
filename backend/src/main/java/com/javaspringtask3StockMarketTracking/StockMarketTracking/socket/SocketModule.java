@@ -81,15 +81,14 @@ public class SocketModule {
     }
 
     private void sendAllStocks(SocketIOClient client, String room) {
-        Set<StockDto> allStocks = stockService.getAllStock();
+        List<StockDto> allStocks = stockService.getAllStock();
         client.getNamespace().getRoomOperations(room)
                 .sendEvent("get_all_stock", allStocks, room);
     }
 
     private void sendSingleStock(SocketIOClient client, String room) {
         StockDto stockDto = stockService.getStockByName(room.toString());
-        System.out.println("room string" + stockDto.getName() +room.toString());
-        Map<String, Set<StockHistoryDto>> stockHistoryMap = stockHistoryService.getStockHistoryForAllIntervals(stockDto.getStockID());
+        Map<String, List<StockDto>> stockHistoryMap = stockService.getStockForAllIntervals(stockDto.getStockID());
         client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_yearly",stockHistoryMap.get("yearly"),room);
         client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_monthly",stockHistoryMap.get("monthly"),room);
         client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_weekly",stockHistoryMap.get("weekly"),room);

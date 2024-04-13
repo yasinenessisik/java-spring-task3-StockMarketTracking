@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockHistoryDto {
-    private int StockHistoryID;
+    private int stockHistoryID;
     private long currentValue;
     private String changeDirection;
     private double percentageChange;
-    private String localDateTime;
+    private LocalDateTime localDateTime;
 }

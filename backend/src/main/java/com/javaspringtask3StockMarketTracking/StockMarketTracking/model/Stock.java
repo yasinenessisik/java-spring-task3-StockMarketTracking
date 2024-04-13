@@ -4,25 +4,28 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
+@ToString
 public class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int StockID;
+    private int stockID;
     private String name;
 
     @OneToMany(mappedBy = "stock",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<StockHistory> stockHistory = new HashSet<>();
+    private List<StockHistory> stockHistory = new ArrayList<>();
 
     public int getStockID() {
-        return StockID;
+        return stockID;
     }
 
     public void setStockID(int stockID) {
-        StockID = stockID;
+        stockID = stockID;
     }
 
     public String getName() {
@@ -33,11 +36,11 @@ public class Stock {
         this.name = name;
     }
 
-    public Set<StockHistory> getStockHistory() {
+    public List<StockHistory> getStockHistory() {
         return stockHistory;
     }
 
-    public void setStockHistory(Set<StockHistory> stockHistory) {
+    public void setStockHistory(List<StockHistory> stockHistory) {
         this.stockHistory = stockHistory;
     }
 }

@@ -1,7 +1,7 @@
 package com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request;
 
 public class StockHistoryAddRequest {
-    int StockId;
+    int stockId;
     int currentValue;
 
     public int getCurrentValue() {
@@ -13,11 +13,11 @@ public class StockHistoryAddRequest {
     }
 
     public int getStockId() {
-        return StockId;
+        return stockId;
     }
 
     public void setStockId(int stockId) {
-        StockId = stockId;
+        this.stockId = stockId;
     }
 
 }

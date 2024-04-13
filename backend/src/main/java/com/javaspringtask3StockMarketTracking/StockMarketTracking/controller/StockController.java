@@ -1,8 +1,10 @@
 package com.javaspringtask3StockMarketTracking.StockMarketTracking.controller;
 
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockHistoryDto;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockDto;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryGetRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +33,22 @@ public class StockController {
         return ResponseEntity.ok(stockService.addNewStock(stockAddRequest));
     }
     @GetMapping("getAllStocks")
-    public ResponseEntity<Set<StockDto>> getAllStocks(){
+    public ResponseEntity<List<StockDto>> getAllStocks(){
         return ResponseEntity.ok(stockService.getAllStock());
+    }
+
+    @PostMapping("yearly")
+    public ResponseEntity<List<StockDto>> getStockLatestHistoryYearly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+        return ResponseEntity.ok(stockService.getStockHistoryYearly(stockHistoryGetRequest.getStockID()));
+    }
+
+    @PostMapping("monthly")
+    public ResponseEntity<List<StockDto>> getStockLatestHistoryMonthly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+        return ResponseEntity.ok(stockService.getStockHistoryMonthly(stockHistoryGetRequest.getStockID()));
+    }
+
+    @PostMapping("weekly")
+    public ResponseEntity<List<StockDto>> getStockLatestHistoryWeekly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+        return ResponseEntity.ok(stockService.getStockHistoryWeekly(stockHistoryGetRequest.getStockID()));
     }
 }

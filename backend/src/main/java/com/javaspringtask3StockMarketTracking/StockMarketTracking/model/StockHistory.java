@@ -8,11 +8,10 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 @Entity
-@ToString
 public class StockHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int StockHistoryID;
+    private int stockHistoryID;
 
     private long currentValue;
     @Enumerated(EnumType.STRING)
@@ -59,11 +58,11 @@ public class StockHistory {
     }
 
     public int getStockHistoryID() {
-        return StockHistoryID;
+        return stockHistoryID;
     }
 
     public void setStockHistoryID(int stockHistoryID) {
-        StockHistoryID = stockHistoryID;
+        stockHistoryID = stockHistoryID;
     }
 
 

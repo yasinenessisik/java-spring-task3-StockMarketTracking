@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 @Data
 @Builder
@@ -15,9 +16,9 @@ import java.util.Set;
 @AllArgsConstructor
 public class StockDto {
 
-    private int StockID;
+    private int stockID;
     private String name;
 
-    private Set<StockHistoryDto> stockHistory;
+    private List<StockHistoryDto> stockHistory;
 
 }
