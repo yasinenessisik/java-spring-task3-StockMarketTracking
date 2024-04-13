@@ -35,7 +35,7 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-       // socketIOServer.start();
+       //socketIOServer.start();
 
         // 3 farklı hisse senedi oluştur
         StockAddRequest stock1 = new StockAddRequest();

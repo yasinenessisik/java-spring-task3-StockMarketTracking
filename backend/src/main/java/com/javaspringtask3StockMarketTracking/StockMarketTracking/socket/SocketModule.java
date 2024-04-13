@@ -6,15 +6,17 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockDto;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockHistoryDto;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.converter.StockDtoConverter;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryAddRequest;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockHistoryService;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockService;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -23,11 +25,13 @@ public class SocketModule {
     private final SocketIOServer socketIOServer;
     private final StockService stockService;
     private final StockDtoConverter converter;
+    private final StockHistoryService stockHistoryService;
 
-    public SocketModule(SocketIOServer socketIOServer, StockService stockService, StockDtoConverter converter) {
+    public SocketModule(SocketIOServer socketIOServer, StockService stockService, StockDtoConverter converter, StockHistoryService stockHistoryService) {
         this.socketIOServer = socketIOServer;
         this.stockService = stockService;
         this.converter = converter;
+        this.stockHistoryService = stockHistoryService;
         socketIOServer.addConnectListener(onConnected());
         socketIOServer.addDisconnectListener(onDisconnected());
         socketIOServer.addEventListener("send_stock_history", StockHistoryAddRequest.class, onStockHistoryReceived());
@@ -46,6 +50,7 @@ public class SocketModule {
     private DataListener<StockHistoryAddRequest> onStockHistoryReceived() {
         return (senderClient, data, ackSender) -> {
             StockDto newStockDto = stockService.saveStockHistory(data);
+
             sendAllStocks(senderClient, "all");
             sendSingleStock(senderClient, newStockDto.getName());
             ackSender.sendAckData("Stock history added successfully", newStockDto);
@@ -66,36 +71,28 @@ public class SocketModule {
 
     private void sendInitialData(SocketIOClient client, String room) {
 
-        if ("admin".equals(room)) {
+        if ("all".equals(room)) {
             sendAllStocks(client, room);
-        } else if ("all".equals(room)) {
+        } else if ("admin".equals(room)) {
             sendAllStocks(client, room);
-        }else if ("single_stock_yearly".equals(room)) {
-            sendAllStocks(client, room);
-        }else if ("single_stock_monthly".equals(room)) {
-            sendAllStocks(client, room);
-        }
-        else if ("single_stock_weekly".equals(room)) {
-            sendAllStocks(client, room);
+        }else {
+            sendSingleStock(client, room);
         }
     }
 
     private void sendAllStocks(SocketIOClient client, String room) {
-        PageRequest pageRequest = PageRequest.of(0,10)
-        Slice<StockDto> allStocks = stockService.getAllStockPagination();
-        client.getNamespace().getRoomOperations(room)
-                .sendEvent("get_all_stock", allStocks, room);
-    }
-    private void sendAllStocksYearly(SocketIOClient client, String room) {
-        Slice<StockDto> allStocks = stockService.getAllStockPagination();
+        Set<StockDto> allStocks = stockService.getAllStock();
         client.getNamespace().getRoomOperations(room)
                 .sendEvent("get_all_stock", allStocks, room);
     }
 
     private void sendSingleStock(SocketIOClient client, String room) {
         StockDto stockDto = stockService.getStockByName(room.toString());
-        client.getNamespace().getRoomOperations(room)
-                .sendEvent("get_single_stock", stockDto, room);
+        System.out.println("room string" + stockDto.getName() +room.toString());
+        Map<String, Set<StockHistoryDto>> stockHistoryMap = stockHistoryService.getStockHistoryForAllIntervals(stockDto.getStockID());
+        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_yearly",stockHistoryMap.get("yearly"),room);
+        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_monthly",stockHistoryMap.get("monthly"),room);
+        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_weekly",stockHistoryMap.get("weekly"),room);
     }
     private void sendConnectMessage(SocketIOClient client, String room) {
         client.getNamespace().getRoomOperations(room)

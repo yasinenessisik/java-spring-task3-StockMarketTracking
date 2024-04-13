@@ -25,7 +25,7 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Inte
             "AND sh.localDateTime BETWEEN :startTime AND :endTime " +
             "ORDER BY sh.localDateTime DESC")
     Set<StockHistory> findStockHistoryByStockIdAndTimeRange(
-            @Param("stockId") Long stockId,
+            @Param("stockId") int stockId,
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime);
 }

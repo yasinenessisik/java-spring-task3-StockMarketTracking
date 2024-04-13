@@ -91,8 +91,7 @@ public class StockService {
         return converter.convert(newStock);
     }
     public Set<StockDto> getAllStock(){
-        return stockRepository.findAll().stream().map(stock -> {
-            System.out.println(converter.convert(stock));
+        return stockRepository.findAllStocksWithHistoryOrderByStockHistoryID().stream().map(stock -> {
             return converter.convert(stock);
         }).collect(Collectors.toSet());
     }

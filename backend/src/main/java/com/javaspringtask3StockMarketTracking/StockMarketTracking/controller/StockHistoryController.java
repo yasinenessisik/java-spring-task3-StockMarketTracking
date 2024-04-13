@@ -6,6 +6,8 @@ import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockH
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("api/v1/stockhistory")
 public class StockHistoryController {
@@ -19,4 +21,20 @@ public class StockHistoryController {
     public ResponseEntity<StockHistoryDto> getStockLatestHistory(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
         return ResponseEntity.ok(service.getLatestStockHistory(stockHistoryGetRequest));
     }
+
+    @PostMapping("yearly")
+    public ResponseEntity<Set<StockHistoryDto>> getStockLatestHistoryYearly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+        return ResponseEntity.ok(service.getStockHistoryYearly(stockHistoryGetRequest.getStockID()));
+    }
+
+    @PostMapping("monthly")
+    public ResponseEntity<Set<StockHistoryDto>> getStockLatestHistoryMonthly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+        return ResponseEntity.ok(service.getStockHistoryMonthly(stockHistoryGetRequest.getStockID()));
+    }
+
+    @PostMapping("weekly")
+    public ResponseEntity<Set<StockHistoryDto>> getStockLatestHistoryWeekly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+        return ResponseEntity.ok(service.getStockHistoryWeekly(stockHistoryGetRequest.getStockID()));
+    }
+
 }
