@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
+
 @Service
 public class StockHistoryService {
     private final StockHistoryRepository stockHistoryRepository;
@@ -93,5 +95,9 @@ public class StockHistoryService {
             stockHistory.setCurrentValue(0);
             stockHistory.setPercentageChange(0);
         return stockHistory;
+    }
+
+    public Set<StockHistoryDto> getStockHistoryBetweenDate(){
+        return
     }
 }

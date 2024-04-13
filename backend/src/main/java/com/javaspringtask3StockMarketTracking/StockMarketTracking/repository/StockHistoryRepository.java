@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 
 public interface StockHistoryRepository extends JpaRepository<StockHistory, Integer> {
@@ -23,7 +24,7 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Inte
             "WHERE sh.stock.StockID = :stockId " +
             "AND sh.localDateTime BETWEEN :startTime AND :endTime " +
             "ORDER BY sh.localDateTime DESC")
-    Slice<StockHistory> findStockHistoryByStockIdAndTimeRange(
+    Set<StockHistory> findStockHistoryByStockIdAndTimeRange(
             @Param("stockId") Long stockId,
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime);

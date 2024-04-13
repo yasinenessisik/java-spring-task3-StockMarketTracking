@@ -10,6 +10,7 @@ import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.converter.
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
@@ -65,16 +66,27 @@ public class SocketModule {
 
     private void sendInitialData(SocketIOClient client, String room) {
 
-        if ("all".equals(room)) {
+        if ("admin".equals(room)) {
             sendAllStocks(client, room);
-        } else if ("admin".equals(room)) {
+        } else if ("all".equals(room)) {
             sendAllStocks(client, room);
-        } else {
-            sendSingleStock(client, room);
+        }else if ("single_stock_yearly".equals(room)) {
+            sendAllStocks(client, room);
+        }else if ("single_stock_monthly".equals(room)) {
+            sendAllStocks(client, room);
+        }
+        else if ("single_stock_weekly".equals(room)) {
+            sendAllStocks(client, room);
         }
     }
 
     private void sendAllStocks(SocketIOClient client, String room) {
+        PageRequest pageRequest = PageRequest.of(0,10)
+        Slice<StockDto> allStocks = stockService.getAllStockPagination();
+        client.getNamespace().getRoomOperations(room)
+                .sendEvent("get_all_stock", allStocks, room);
+    }
+    private void sendAllStocksYearly(SocketIOClient client, String room) {
         Slice<StockDto> allStocks = stockService.getAllStockPagination();
         client.getNamespace().getRoomOperations(room)
                 .sendEvent("get_all_stock", allStocks, room);
