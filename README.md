@@ -1,5 +1,12 @@
 # Stock Tracking Application Development Task
 
+## Status : Completed
+  - Socketio
+  - JPA
+  - SQL
+  - ReCharts
+  - TCP
+
 ## Task Description
 Develop a professional-grade stock tracking application with seamless connectivity, emphasizing continuous uptime and reliability.
 
