@@ -30,6 +30,11 @@
 			<artifactId>netty-socketio</artifactId>
 			<version>1.7.17</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.13.0</version> <!-- Kullanılan Jackson sürümüne göre güncelleyin -->
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
