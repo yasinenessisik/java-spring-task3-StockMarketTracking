@@ -6,8 +6,10 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockDto;
-import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockHistoryDto;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockDtoSocket;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.converter.StockDtoConverter;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.converter.StockDtoSocketConverter;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.converter.StockHistoryDtoSocketConverter;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.service.StockHistoryService;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class SocketModule {
@@ -26,12 +28,16 @@ public class SocketModule {
     private final StockService stockService;
     private final StockDtoConverter converter;
     private final StockHistoryService stockHistoryService;
+    private final StockHistoryDtoSocketConverter stockHistoryDtoSocketConverter;
+    private final StockDtoSocketConverter stockDtoSocketConverter;
 
-    public SocketModule(SocketIOServer socketIOServer, StockService stockService, StockDtoConverter converter, StockHistoryService stockHistoryService) {
+    public SocketModule(SocketIOServer socketIOServer, StockService stockService, StockDtoConverter converter, StockHistoryService stockHistoryService, StockHistoryDtoSocketConverter stockHistoryDtoSocketConverter, StockDtoSocketConverter stockDtoSocketConverter) {
         this.socketIOServer = socketIOServer;
         this.stockService = stockService;
         this.converter = converter;
         this.stockHistoryService = stockHistoryService;
+        this.stockHistoryDtoSocketConverter = stockHistoryDtoSocketConverter;
+        this.stockDtoSocketConverter = stockDtoSocketConverter;
         socketIOServer.addConnectListener(onConnected());
         socketIOServer.addDisconnectListener(onDisconnected());
         socketIOServer.addEventListener("send_stock_history", StockHistoryAddRequest.class, onStockHistoryReceived());
@@ -81,19 +87,21 @@ public class SocketModule {
     }
 
     private void sendAllStocks(SocketIOClient client, String room) {
-        List<StockDto> allStocks = stockService.getAllStock();
+        List<StockDtoSocket> allStocks = stockService.getAllStock().stream().map(stockDto -> stockDtoSocketConverter.convert(stockDto)).collect(Collectors.toList());
         client.getNamespace().getRoomOperations(room)
                 .sendEvent("get_all_stock", allStocks, room);
     }
 
     private void sendSingleStock(SocketIOClient client, String room) {
         StockDto stockDto = stockService.getStockByName(room.toString());
-        Map<String, List<StockDto>> stockHistoryMap = stockService.getStockForAllIntervals(stockDto.getStockID());
-        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_yearly",stockHistoryMap.get("yearly"),room);
-        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_monthly",stockHistoryMap.get("monthly"),room);
-        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_weekly",stockHistoryMap.get("weekly"),room);
+        Map<String, StockDtoSocket> stockHistoryMap = stockService.getStockForAllIntervals(stockDto.getStockID());
+        StockDtoSocket stockDtos = stockHistoryMap.get("yearly");
+        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_yearly",stockDtos);
+        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_monthly",stockHistoryMap.get("monthly"));
+        client.getNamespace().getRoomOperations(room).sendEvent("get_single_stock_weekly",stockHistoryMap.get("weekly"));
     }
     private void sendConnectMessage(SocketIOClient client, String room) {
+        System.out.println("connected");
         client.getNamespace().getRoomOperations(room)
                 .sendEvent("get_message", String.format("%s connected to -> %s",
                         client.getSessionId(), room

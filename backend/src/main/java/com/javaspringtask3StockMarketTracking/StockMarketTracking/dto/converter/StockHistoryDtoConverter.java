@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockHistoryDtoConverter {
     public StockHistoryDto convert(StockHistory from){
-        System.out.println(from.getStockHistoryID());
         return StockHistoryDto.builder()
                 .stockHistoryID(from.getStockHistoryID())
                 .currentValue(from.getCurrentValue())

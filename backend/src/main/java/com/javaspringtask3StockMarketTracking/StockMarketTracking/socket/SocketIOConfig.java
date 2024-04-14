@@ -17,6 +17,8 @@ public class SocketIOConfig {
         com.corundumstudio.socketio.Configuration configuration = new com.corundumstudio.socketio.Configuration();
         configuration.setHostname(host);
         configuration.setPort(port);
+        //configuration.setContext("/socket.io");
+
         return new SocketIOServer(configuration);
     }
 }

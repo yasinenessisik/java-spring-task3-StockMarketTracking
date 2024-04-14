@@ -2,7 +2,9 @@ package com.javaspringtask3StockMarketTracking.StockMarketTracking.service;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockDtoSocket;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockHistoryDto;
+import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.converter.StockDtoSocketConverter;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.request.StockHistoryAddRequest;
 import com.javaspringtask3StockMarketTracking.StockMarketTracking.dto.StockDto;
@@ -31,11 +33,13 @@ public class StockService {
 
     private final StockRepository stockRepository;
     private final StockDtoConverter converter;
+    private final StockDtoSocketConverter stockDtoSocketConverter;
     private final StockHistoryService stockHistoryService;
-    public StockService(ApplicationEventPublisher eventPublisher, StockRepository stockRepository, StockDtoConverter converter, StockHistoryService stockHistoryService) {
+    public StockService(ApplicationEventPublisher eventPublisher, StockRepository stockRepository, StockDtoConverter converter, StockDtoSocketConverter stockDtoSocketConverter, StockHistoryService stockHistoryService) {
         this.eventPublisher = eventPublisher;
         this.stockRepository = stockRepository;
         this.converter = converter;
+        this.stockDtoSocketConverter = stockDtoSocketConverter;
         this.stockHistoryService = stockHistoryService;
     }
     @Transactional
@@ -89,9 +93,7 @@ public class StockService {
         return converter.convert(newStock);
     }
     public List<StockDto> getAllStock(){
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneYearAgo = now.minusYears(1);
-        List<StockDto> collect = stockRepository.findAllStocksWithHistoryOrderByDateTimeAsc(oneYearAgo,now).stream()
+        List<StockDto> collect = stockRepository.findAll().stream()
                 .map(stock -> converter.convert(stock)).collect(Collectors.toList());
         return collect;
     }
@@ -115,38 +117,30 @@ public class StockService {
 
     }
 
-    public List<StockDto> getStockHistoryWeekly(Integer stockId){
+    public StockDto getStockHistoryWeekly(Integer stockId){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneWeekAgo = now.minusWeeks(1);
-        return stockRepository.findByStockIdAndDateTimeRange(stockId,oneWeekAgo,now).stream().map(stockHistory ->
-                converter.convert(stockHistory)
-        ).collect(Collectors.toList());
+        return converter.convert(stockRepository.findByStockIdAndDateTimeRange(stockId,oneWeekAgo,now));
     }
-    public List<StockDto> getStockHistoryMonthly(Integer stockId){
+    public StockDto getStockHistoryMonthly(Integer stockId){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneMonthAgo = now.minusMonths(1);
-        return stockRepository.findByStockIdAndDateTimeRange(stockId,oneMonthAgo,now).stream().map(stockHistory ->
-                converter.convert(stockHistory)
-        ).collect(Collectors.toList());
+        return converter.convert(stockRepository.findByStockIdAndDateTimeRange(stockId,oneMonthAgo,now));
+
     }
-    public List<StockDto> getStockHistoryYearly(Integer stockId) {
+    public StockDto getStockHistoryYearly(Integer stockId) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneYearAgo = now.minusYears(1);
 
-        List<StockDto> collect = stockRepository.findByStockIdAndDateTimeRange(stockId, oneYearAgo, now)
-                .stream()
-                .map(stockHistory -> converter.convert(stockHistory))
-                .collect(Collectors.toList());
-
-        return collect;
+        return converter.convert(stockRepository.findByStockIdAndDateTimeRange(stockId,oneYearAgo,now));
     }
 
-    public Map<String, List<StockDto>> getStockForAllIntervals(Integer stockId) {
-        Map<String, List<StockDto>> historyMap = new HashMap<>();
+    public Map<String, StockDtoSocket> getStockForAllIntervals(Integer stockId) {
+        Map<String, StockDtoSocket> historyMap = new HashMap<>();
 
-        historyMap.put("yearly", getStockHistoryYearly(stockId));
-        historyMap.put("monthly", getStockHistoryMonthly(stockId));
-        historyMap.put("weekly", getStockHistoryWeekly(stockId));
+        historyMap.put("yearly", stockDtoSocketConverter.convert(getStockHistoryYearly(stockId)));
+        historyMap.put("monthly", stockDtoSocketConverter.convert(getStockHistoryMonthly(stockId)));
+        historyMap.put("weekly", stockDtoSocketConverter.convert(getStockHistoryWeekly(stockId)));
 
         return historyMap;
     }

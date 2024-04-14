@@ -38,17 +38,17 @@ public class StockController {
     }
 
     @PostMapping("yearly")
-    public ResponseEntity<List<StockDto>> getStockLatestHistoryYearly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+    public ResponseEntity<StockDto> getStockLatestHistoryYearly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
         return ResponseEntity.ok(stockService.getStockHistoryYearly(stockHistoryGetRequest.getStockID()));
     }
 
     @PostMapping("monthly")
-    public ResponseEntity<List<StockDto>> getStockLatestHistoryMonthly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+    public ResponseEntity<StockDto> getStockLatestHistoryMonthly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
         return ResponseEntity.ok(stockService.getStockHistoryMonthly(stockHistoryGetRequest.getStockID()));
     }
 
     @PostMapping("weekly")
-    public ResponseEntity<List<StockDto>> getStockLatestHistoryWeekly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
+    public ResponseEntity<StockDto> getStockLatestHistoryWeekly(@RequestBody StockHistoryGetRequest stockHistoryGetRequest){
         return ResponseEntity.ok(stockService.getStockHistoryWeekly(stockHistoryGetRequest.getStockID()));
     }
 }

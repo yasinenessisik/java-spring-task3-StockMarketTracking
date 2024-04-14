@@ -44,12 +44,17 @@ public class StockHistoryService {
         StockHistory stockHistory = new StockHistory();
 
         try {
+            if (stockHistoryAddRequest.getLocalDateTime() == null){
+                setLocalDateTime(stockHistory);
+            }else {
+                stockHistory.setLocalDateTime(stockHistoryAddRequest.getLocalDateTime());
+            }
                 Page<StockHistory> previousStockHistory = stockHistoryRepository.getLatestStockHistory(stockHistoryAddRequest.getStockId(),PageRequest.of(0,1));
                 StockHistory latestHistory = previousStockHistory.getContent().get(0);
                 stockHistory.setCurrentValue(stockHistoryAddRequest.getCurrentValue());
                 calculateChangeDirection(stockHistory,latestHistory);
                 calculatePercentageChange(stockHistory,latestHistory);
-                setLocalDateTime(stockHistory);
+
                 return stockHistory;
 
 
